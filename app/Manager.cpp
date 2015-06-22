@@ -25,13 +25,8 @@ int NodePM::Manager::runThreadForkItem(std::string appKey, int forkCounter, Pasc
     return res;
 }
 
-void NodePM::Manager::loadSettings() {
+void NodePM::Manager::loadSettings(PascalSystem::Settings::SettingsAbstract* config) {
     try {
-        if (config == NULL) {
-            config = new PascalSystem::Settings::SettingsIni(getConfigFilePath());
-            config->load();
-        }
-        
         if (config->exists("logErrorFilePath")) {
             logger = new PascalSystem::Logger::LoggerFileOut(
                 config->getStringValue("logErrorFilePath"),
@@ -120,6 +115,7 @@ void NodePM::Manager::loadSettings() {
                 this->backupTemporaryItem[sectionKey] = backupItem;
             }
         }
+        this->config = config;
     } catch (std::runtime_error &ex) {
         std::string errMsg = "Error loading settings: ";
         errMsg.append(ex.what());
@@ -327,21 +323,6 @@ void NodePM::Manager::refreshProc(std::string appKey, bool reloadMode) {
     }
     
     logger->info("End refresh application.");
-}
-
-std::string NodePM::Manager::getConfigFilePath() {
-    if (isFileExists("/etc/nodepm.conf")) {
-        return "/etc/nodepm.conf";
-    }
-    
-    std::string configFilePath = "";
-    configFilePath.append(getcwd(NULL, 0));
-    configFilePath.append("/config.ini");
-    if (isFileExists(configFilePath)) {
-        return configFilePath;
-    }
-    
-    throw std::runtime_error("not found config file /etc/nodepm.conf");
 }
 
 bool NodePM::Manager::isFileExists(std::string filePath) {

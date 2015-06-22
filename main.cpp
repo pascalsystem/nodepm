@@ -10,12 +10,16 @@
 #include <unistd.h>
 #include "./app/Manager.h"
 #include "./app/HelpMe.h"
+#include "./app/ConfigLoader.h"
+#include "./lib/Settings/SettingsAbstract.h"
 #include "./lib/Command/CommandStdIn.h"
 #include "./lib/Logger/LoggerFileOut.h"
-#include "lib/Utils/ProcSingleton.h"
-#include "lib/Command/CommandUnixSock.h"
+#include "./lib/Utils/ProcSingleton.h"
+#include "./lib/Command/CommandUnixSock.h"
 
 using namespace NodePM;
+using namespace PascalSystem::Settings;
+using namespace PascalSystem::Utils;
 
 /**
  * Manager instance
@@ -105,11 +109,14 @@ int main(int argc, char** argv) {
         return EXIT_FAILURE;
     }
     
+    SettingsAbstract* config = ConfigLoader::getConfig();
+    config->load();
+    
     std::string appCommand = "";
     for (int i=1; i<argc;i++) {
         if (strcmp(argv[i], "--console=command") == 0) {
             commandMode = true;
-            manager = new Manager();
+            manager = new Manager(config);
             PascalSystem::Command::CommandStdIn* cmd = new PascalSystem::Command::CommandStdIn();
             cmd->setHandler(procCommand);
             cmd->run();
@@ -125,8 +132,11 @@ int main(int argc, char** argv) {
         appCommand.append(argv[i]);
     }
     
-    std::string unixPath = PascalSystem::Utils::Directory::getSockDirectory() + "/psnodepm.sock";
-    PascalSystem::Utils::ProcSingleton* procPid = new PascalSystem::Utils::ProcSingleton("psnodepm.pid");
+    std::string managerSocket = config->getStringValue("managerSocket");
+    std::string pidFileName = config->getStringValue("managerPid");
+    
+    std::string unixPath = managerSocket;
+    ProcSingleton* procPid = new ProcSingleton(pidFileName, true);
     bool dameonLive = procPid->createPid(getpid()) ? false : true;
     
     if (dameonLive) {
@@ -143,15 +153,15 @@ int main(int argc, char** argv) {
         return EXIT_FAILURE;
     }
     
-    manager = new Manager();
-    if (!manager->getConfig()->exists("nodepmErrorFilePath") || !manager->getConfig()->exists("nodepmDebugFilePath")) {
+    manager = new Manager(config);
+    if (!config->exists("nodepmErrorFilePath") || !config->exists("nodepmDebugFilePath")) {
         std::cerr << std::endl;
         std::cerr << "Not found in settings nodepmErrorFilePath or nodepmDebugFilePath properties.";
         std::cerr << std::endl;
         return EXIT_FAILURE;
     }
-    std::string nodepmErrorFilePath = manager->getConfig()->getStringValue("nodepmErrorFilePath");
-    std::string nodepmDebugFilePath = manager->getConfig()->getStringValue("nodepmDebugFilePath");
+    std::string nodepmErrorFilePath = config->getStringValue("nodepmErrorFilePath");
+    std::string nodepmDebugFilePath = config->getStringValue("nodepmDebugFilePath");
 
     pid_t dameonPid = fork();
     if (dameonPid < 0) {
