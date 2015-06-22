@@ -86,13 +86,13 @@ namespace NodePM {
         /**
          * Constructor
          * 
+         * @param PascalSystem::Settings::SettingsAbstract settings
          */
-        Manager() {
+        Manager(PascalSystem::Settings::SettingsAbstract* settings) {
             this->logger = new PascalSystem::Logger::LoggerConsole();
             this->isStart = false;
-            config = NULL;
 
-            loadSettings();
+            loadSettings(settings);
         }
         /**
          * Start all application
@@ -149,18 +149,6 @@ namespace NodePM {
          */
         void reload(std::string appKey) {
             refreshProc(appKey, true);
-        }
-        /**
-         * Get setting
-         * 
-         * @return PascalSystem::Settings::SettingsAbstract*
-         */
-        PascalSystem::Settings::SettingsAbstract* getConfig() {
-            if (config == NULL) {
-                throw std::runtime_error("Settings not loaded.");
-            }
-            
-            return config;
         }
     private:
         /**
@@ -220,9 +208,10 @@ namespace NodePM {
         /**
          * Load settings
          * 
+         * @param PascalSystem::Settings::SettingsAbstract settings
          * @retuen void
          */
-        void loadSettings();
+        void loadSettings(PascalSystem::Settings::SettingsAbstract* settings);
         /**
          * Create NodeJS Item configuration
          * 
@@ -243,12 +232,6 @@ namespace NodePM {
          * @return void
          */
         void refreshProc(std::string appKey, bool reloadMode);
-        /**
-         * Get config file path
-         * 
-         * @return std::string
-         */
-        std::string getConfigFilePath();
         /**
          * Check file is exists
          * 

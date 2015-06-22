@@ -34,6 +34,9 @@ namespace PascalSystem {
              * @param std::string pidFilePath
              */
             ProcSingleton(std::string pidFileName) {
+                this->fd = -1;
+                this->filePid = -1;
+                this->absolutePath = false;
                 this->pidFileName = pidFileName;
                 this->pidFileDirectory = PascalSystem::Utils::Directory::getLockDirectory();
             }
@@ -46,8 +49,27 @@ namespace PascalSystem {
             ProcSingleton(std::string pidFileName, std::string pidFileDirectory) {
                 this->fd = -1;
                 this->filePid = -1;
+                this->absolutePath = false;
                 this->pidFileName = pidFileName;
                 this->pidFileDirectory = pidFileDirectory;
+            }
+            /**
+             * Constructor
+             * 
+             * @param std::string absolutePath
+             * @param bool isAbsolute
+             */
+            ProcSingleton(std::string absolutePath, bool isAbsolute) {
+                this->fd = -1;
+                this->filePid = -1;
+                if (isAbsolute) {
+                    this->absolutePath = true;
+                    this->pidFileName = absolutePath;
+                } else {
+                    this->absolutePath = false;
+                    this->pidFileName = absolutePath;
+                    this->pidFileDirectory = PascalSystem::Utils::Directory::getLockDirectory();
+                }
             }
             /**
              * Create pid
@@ -80,6 +102,12 @@ namespace PascalSystem {
              */
             int fd;
             /**
+             * Is absolute path
+             * 
+             * @var bool
+             */
+            bool absolutePath;
+            /**
              * Pid file name
              * 
              * @var std::string
@@ -109,6 +137,9 @@ namespace PascalSystem {
              * @return 
              */
             std::string getPidFilePath() {
+                if (absolutePath) {
+                    return pidFileName;
+                }
                 return pidFileDirectory + "/" + pidFileName;
             }
         };
