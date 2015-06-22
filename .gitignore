@@ -1,3 +1,14 @@
+# Temporary
+nbproject/*
+!nbproject/Makefile-Debug.mk
+!nbproject/Makefile-impl.mk
+!nbproject/Makefile-Release.mk
+!nbproject/Makefile-variables.mk
+!nbproject/Package-Debug.bash
+!nbproject/Package-Release.bash
+dist
+build
+
 # Compiled Object files
 *.slo
 *.lo
