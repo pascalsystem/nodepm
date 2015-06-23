@@ -57,7 +57,6 @@ std::string NodePM::ConfigLoader::getConfigPath() {
 }
 
 bool NodePM::ConfigLoader::isFileExists(std::string filePath) {
-    std::cout << filePath << std::endl;
     struct stat buffer;   
     return (stat(filePath.c_str(), &buffer) == 0);
 }
