@@ -7,26 +7,61 @@
 
 #include "ProcSingleton.h"
 
-bool PascalSystem::Utils::ProcSingleton::createPid(int pid, std::string data) {
-    fd = open(getPidFilePath().c_str(), O_CREAT | O_TRUNC | O_APPEND | O_WRONLY, 0666);
-    if (fd <= 0) {
-        return false;
-    }
-    int resultLock = flock(fd, LOCK_EX | LOCK_NB);
-    if (resultLock != 0) {
-        return false;
+
+
+void PascalSystem::Utils::ProcSingleton::createPid(int pid) {
+    fd = getLockDescriptor(true);
+    if (fd == -1) {
+        throw std::runtime_error("error create process pid file");
+    } else if (fd <= 0) {
+        throw std::runtime_error("error lock process pid file");
     }
     
-    std::ostringstream ss;
-    ss << pid << std::endl;
-    ss << data;
-    std::string res = ss.str();
-    
-    write(fd, res.c_str(), res.length());
-    return true;
+    std::string fileData = getPidFileLine(pid);
+    write(fd, fileData.c_str(), fileData.length());
 }
 
 void PascalSystem::Utils::ProcSingleton::destroyPid() {
-    flock(fd, LOCK_UN);
-    close(fd);
+    releaseLockDescriptor(fd);
+    fd = -1;
+}
+
+bool PascalSystem::Utils::ProcSingleton::isActive() {
+    int tempFD = getLockDescriptor();
+    if (tempFD > 0) {
+        releaseLockDescriptor(tempFD);
+        return false;
+    }
+    return true;
+}
+
+void PascalSystem::Utils::ProcSingleton::releaseLockDescriptor(int lockFD) {
+    flock(lockFD, LOCK_UN);
+    close(lockFD);
+}
+
+int PascalSystem::Utils::ProcSingleton::getLockDescriptor(bool create) {
+    int lockFD;
+    if (create) {
+        lockFD = open(getPidFilePath().c_str(), O_CREAT | O_TRUNC | O_APPEND | O_WRONLY, 0666);
+    } else {
+        lockFD = open(getPidFilePath().c_str(), O_RDONLY);
+    }
+    
+    if (lockFD <= 0) {
+        return -1;
+    }
+    int resultLock = flock(lockFD, LOCK_EX | LOCK_NB);
+    if (resultLock != 0) {
+        close(lockFD);
+        return -2;
+    }
+    
+    return lockFD;
+}
+
+std::string PascalSystem::Utils::ProcSingleton::getPidFileLine(int pid) {
+    std::ostringstream ss;
+    ss << pid << std::endl;
+    return ss.str();
 }

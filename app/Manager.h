@@ -181,12 +181,6 @@ namespace NodePM {
          * @var PascalSystem::Logger::LoggerAbstract*
          */
         PascalSystem::Logger::LoggerAbstract* logger;
-        /**
-         * Settings abstract
-         * 
-         * @var PascalSystem::Settings::SettingsAbstract*
-         */
-        PascalSystem::Settings::SettingsAbstract* config;
         
         /**
          * Thread run item
@@ -215,9 +209,13 @@ namespace NodePM {
         /**
          * Create NodeJS Item configuration
          * 
+         * @param PascalSystem::Settings::SettingsAbstract* settings
+         * @param std::string sectionKey
+         * @param std::string globalNodePath
+         * @param std::string globalNodeArgs
          * @return PascalSystem::Process::ConfigNodeJS*
          */
-        PascalSystem::Process::ConfigNodeJS* createItemConfigNodeJS(std::string sectionKey, std::string globalNodePath, std::string globalNodeArgs);
+        PascalSystem::Process::ConfigNodeJS* createItemConfigNodeJS(PascalSystem::Settings::SettingsAbstract* settings, std::string sectionKey, std::string globalNodePath, std::string globalNodeArgs);
         /**
          * Wait for item process open sockets from configurationes
          * 

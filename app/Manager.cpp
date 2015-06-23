@@ -25,48 +25,48 @@ int NodePM::Manager::runThreadForkItem(std::string appKey, int forkCounter, Pasc
     return res;
 }
 
-void NodePM::Manager::loadSettings(PascalSystem::Settings::SettingsAbstract* config) {
+void NodePM::Manager::loadSettings(PascalSystem::Settings::SettingsAbstract* settings) {
     try {
-        if (config->exists("logErrorFilePath")) {
+        if (settings->exists("logErrorFilePath")) {
             logger = new PascalSystem::Logger::LoggerFileOut(
-                config->getStringValue("logErrorFilePath"),
-                config->exists("logDebugFilePath")
-                    ? config->getStringValue("logDebugFilePath")
-                    : config->getStringValue("logErrorFilePath")
+                settings->getStringValue("logErrorFilePath"),
+                settings->exists("logDebugFilePath")
+                    ? settings->getStringValue("logDebugFilePath")
+                    : settings->getStringValue("logErrorFilePath")
             );
         }
         
-        std::string globalNodePath = config->getStringValue("appNodePath");
-        std::string globalNodeArgs = config->exists("appNodeArgs") ? config->getStringValue("appNodeArgs") : "";
+        std::string globalNodePath = settings->getStringValue("appNodePath");
+        std::string globalNodeArgs = settings->exists("appNodeArgs") ? settings->getStringValue("appNodeArgs") : "";
 
-        std::list<std::string> sectiones = config->getSectiones();
+        std::list<std::string> sectiones = settings->getSectiones();
         std::list<std::string>::iterator it;
         for (it = sectiones.begin(); it != sectiones.end(); it++) {
             std::string sectionKey = (*it);
-            int forkNums = config->exists("fork", sectionKey)
-                ? config->getIntegerValue("fork", sectionKey)
+            int forkNums = settings->exists("fork", sectionKey)
+                ? settings->getIntegerValue("fork", sectionKey)
                 : 1;
 
             if (forkNums < 1) {
                 throw std::runtime_error("required minimum one fork process for any item");
             }
             
-            reloadTimeInterval[sectionKey] = config->exists("reloadTimeWait", sectionKey)
-                    ? config->getIntegerValue("reloadTimeWait", sectionKey)
+            reloadTimeInterval[sectionKey] = settings->exists("reloadTimeWait", sectionKey)
+                    ? settings->getIntegerValue("reloadTimeWait", sectionKey)
                     : 0;
             
             std::list<std::string> socketKeys = getListByString(
-                config->exists("socketKeys", sectionKey)
-                    ? config->getStringValue("socketKeys", sectionKey)
+                settings->exists("socketKeys", sectionKey)
+                    ? settings->getStringValue("socketKeys", sectionKey)
                     : "default"
             );
             
-            PascalSystem::Logger::LoggerAbstract* itemLogger = (config->exists("logErrorFilePath", sectionKey))
+            PascalSystem::Logger::LoggerAbstract* itemLogger = (settings->exists("logErrorFilePath", sectionKey))
                     ? new PascalSystem::Logger::LoggerFileOut(
-                            config->getStringValue("logErrorFilePath", sectionKey),
-                            config->exists("logDebugFilePath", sectionKey)
-                                ? config->getStringValue("logDebugFilePath", sectionKey)
-                                : config->getStringValue("logErrorFilePath", sectionKey)
+                            settings->getStringValue("logErrorFilePath", sectionKey),
+                            settings->exists("logDebugFilePath", sectionKey)
+                                ? settings->getStringValue("logDebugFilePath", sectionKey)
+                                : settings->getStringValue("logErrorFilePath", sectionKey)
                         )
                     : logger;
             
@@ -78,10 +78,10 @@ void NodePM::Manager::loadSettings(PascalSystem::Settings::SettingsAbstract* con
                     std::ostringstream ss;
                     ss << procForkNum;
                     std::string socketDefinitionType = (*socketKeysIt);
-                    socketParamsArgs[socketDefinitionType] = config->getStringValue(ss.str(), sectionKey + ".socketFilePath." + socketDefinitionType);
+                    socketParamsArgs[socketDefinitionType] = settings->getStringValue(ss.str(), sectionKey + ".socketFilePath." + socketDefinitionType);
                 }
 
-                PascalSystem::Process::ConfigNodeJS* itemConf = createItemConfigNodeJS(sectionKey, globalNodePath, globalNodeArgs);
+                PascalSystem::Process::ConfigNodeJS* itemConf = createItemConfigNodeJS(settings, sectionKey, globalNodePath, globalNodeArgs);
                 if (socketParamsArgs.size() > 0) {
                     itemConf->setSocketPaths(socketParamsArgs);
                 }
@@ -95,8 +95,8 @@ void NodePM::Manager::loadSettings(PascalSystem::Settings::SettingsAbstract* con
             std::map<std::string, std::string> temporarySocketParamsArgs;
             for (std::list<std::string>::iterator socketKeysIt = socketKeys.begin(); socketKeysIt != socketKeys.end(); socketKeysIt++) {
                 std::string socketDefinitionType = (*socketKeysIt);
-                if (config->exists(socketDefinitionType, sectionKey + ".temporarySocketFilePath")) {
-                    temporarySocketParamsArgs[socketDefinitionType] = config->getStringValue(socketDefinitionType, sectionKey + ".temporarySocketFilePath");
+                if (settings->exists(socketDefinitionType, sectionKey + ".temporarySocketFilePath")) {
+                    temporarySocketParamsArgs[socketDefinitionType] = settings->getStringValue(socketDefinitionType, sectionKey + ".temporarySocketFilePath");
                     counterTemporarySocket++;
                 }
             }
@@ -105,7 +105,7 @@ void NodePM::Manager::loadSettings(PascalSystem::Settings::SettingsAbstract* con
                     throw std::runtime_error("backup temporary socket numbers diffrent then socket keys");
                 }
                 
-                PascalSystem::Process::ConfigNodeJS* backupItemConf = createItemConfigNodeJS(sectionKey, globalNodePath, globalNodeArgs);
+                PascalSystem::Process::ConfigNodeJS* backupItemConf = createItemConfigNodeJS(settings, sectionKey, globalNodePath, globalNodeArgs);
                 backupItemConf->setSocketPaths(temporarySocketParamsArgs);
                 
                 PascalSystem::Process::Item* backupItem = new PascalSystem::Process::Item(
@@ -115,7 +115,6 @@ void NodePM::Manager::loadSettings(PascalSystem::Settings::SettingsAbstract* con
                 this->backupTemporaryItem[sectionKey] = backupItem;
             }
         }
-        this->config = config;
     } catch (std::runtime_error &ex) {
         std::string errMsg = "Error loading settings: ";
         errMsg.append(ex.what());
@@ -129,19 +128,19 @@ void NodePM::Manager::loadSettings(PascalSystem::Settings::SettingsAbstract* con
     }
 }
 
-PascalSystem::Process::ConfigNodeJS* NodePM::Manager::createItemConfigNodeJS(std::string sectionKey, std::string globalNodePath, std::string globalNodeArgs) {
+PascalSystem::Process::ConfigNodeJS* NodePM::Manager::createItemConfigNodeJS(PascalSystem::Settings::SettingsAbstract* settings, std::string sectionKey, std::string globalNodePath, std::string globalNodeArgs) {
     PascalSystem::Process::ConfigNodeJS* itemConf = new PascalSystem::Process::ConfigNodeJS();
 
     itemConf->setNodePath(
-        config->exists("appNodePath", sectionKey)
-            ? config->getStringValue("appNodePath", sectionKey)
+        settings->exists("appNodePath", sectionKey)
+            ? settings->getStringValue("appNodePath", sectionKey)
             : globalNodePath,
-        config->exists("appNodeArgs", sectionKey)
-            ? config->getStringValue("appNodeArgs", sectionKey)
+        settings->exists("appNodeArgs", sectionKey)
+            ? settings->getStringValue("appNodeArgs", sectionKey)
             : globalNodeArgs);
     itemConf->setAppPath(
-        config->getStringValue("appPath", sectionKey),
-        config->exists("appArgs", sectionKey) ? config->getStringValue("appArgs", sectionKey) : ""
+        settings->getStringValue("appPath", sectionKey),
+        settings->exists("appArgs", sectionKey) ? settings->getStringValue("appArgs", sectionKey) : ""
     );
     
     return itemConf;
