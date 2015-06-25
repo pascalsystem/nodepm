@@ -26,7 +26,7 @@ void PascalSystem::Socket::SocketServerUnix::bindSocket() {
     strcpy(sockAddress.sun_path, unixPath.c_str());
     
     unlink(unixPath.c_str());
-    
+
     int bindResult = bind(sock, (struct sockaddr*)&sockAddress, sizeof(sockAddress));
     if (bindResult != 0) {
         closeSocket();
