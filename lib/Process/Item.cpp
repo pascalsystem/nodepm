@@ -110,8 +110,25 @@ void PascalSystem::Process::Item::run() {
 
 void PascalSystem::Process::Item::runPermanently() {
     running = true;
+    int counter = 0;
+    time_t lastTimeRestart = 0;
+    time_t startTime = time(0);
+    
+    MultiErrorOption* errorOptions = config->getErrorOptions();
+    
     while (running) {
+        if ((lastTimeRestart != 0) && (lastTimeRestart <= startTime + errorOptions->tryIntervalSecond)) {
+            counter++;
+            if (counter > errorOptions->maxTryInInterval) {
+                counter = 0;
+                sleep(errorOptions->sleepTimeOnError);
+                startTime = time(0);
+            }
+        }
+        std::cout << lastTimeRestart << " | " << startTime << " | " << counter << std::endl;
         run();
+        lastTimeRestart = time(0);
+        counter++;
     }
 }
 
