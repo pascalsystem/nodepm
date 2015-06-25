@@ -31,8 +31,10 @@ bool PascalSystem::Utils::ProcSingleton::isActive() {
     if (tempFD > 0) {
         releaseLockDescriptor(tempFD);
         return false;
+    } else if (tempFD == -1) {
+        return false;
     }
-    std::cout << "Singleton running [code: " << tempFD << "] error create pid file: " << getPidFilePath() << std::endl;
+    
     return true;
 }
 
