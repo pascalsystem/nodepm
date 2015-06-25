@@ -32,6 +32,7 @@ bool PascalSystem::Utils::ProcSingleton::isActive() {
         releaseLockDescriptor(tempFD);
         return false;
     }
+    std::cout << "Singleton running [code: " << tempFD << "]" << std::endl;
     return true;
 }
 
