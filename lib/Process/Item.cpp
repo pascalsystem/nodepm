@@ -136,16 +136,15 @@ void PascalSystem::Process::Item::hardStop() {
     running = false;
     kill(pid, SIGKILL);
     while ((pid > 0) && (kill(pid, 0) == 0)) {
-        
+        usleep(50000);
     }
     pid = -1;
 }
 
 void PascalSystem::Process::Item::stop() {
     running = false;
-    kill(pid, SIGTERM);
     int counterSigTerm = 0;
-    while ((pid > 0) && (kill(pid, 0) == 0) && (counterSigTerm < 240)) {
+    while ((pid > 0) && (kill(pid, 0) == 0) && (counterSigTerm < 5)) {
         usleep(50000);
         counterSigTerm++;
     }
