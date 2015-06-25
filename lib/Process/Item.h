@@ -20,6 +20,7 @@
 #include <signal.h>
 #include <unistd.h>
 #include <pthread.h>
+#include <time.h>
 
 namespace PascalSystem {
     namespace Process {

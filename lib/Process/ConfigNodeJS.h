@@ -79,6 +79,18 @@ namespace PascalSystem {
             std::map<std::string,std::string> getSocketPaths() {
                 return socketPaths;
             }
+            /**
+             * Get error options
+             * 
+             * @return MultiErrorOption*
+             */
+            MultiErrorOption* getErrorOptions() {
+                MultiErrorOption* options = ConfigAbstract::getErrorOptions();
+                if (options == NULL) {
+                    throw std::runtime_error("NodeJS Config Item required error options");
+                }
+                return options;
+            }
         protected:
             /**
              * Prepare commmand

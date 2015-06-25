@@ -15,6 +15,31 @@
 namespace PascalSystem {
     namespace Process {
         /**
+         * Multi error options
+         * 
+         */
+        struct MultiErrorOption {
+            /**
+             * Try interval time seconds
+             * 
+             * @var int
+             */
+            int tryIntervalSecond;
+            /**
+             * Maximum try in interval time seconds
+             * 
+             * @var int
+             */
+            int maxTryInInterval;
+            /**
+             * Sleep time on maximum try in interval time
+             * 
+             * @var int
+             */
+            int sleepTimeOnError;            
+        };
+        
+        /**
          * Process configuration class
          * 
          */
@@ -26,6 +51,7 @@ namespace PascalSystem {
              */
             ConfigAbstract() {
                 isPrepared = false;
+                errorOptions = NULL;
             }
             /**
              * Get prepared command
@@ -37,6 +63,27 @@ namespace PascalSystem {
                     prepareCommand();
                 }
                 return this->command;
+            }
+            /**
+             * Set error options
+             * 
+             * @param int tryIntervalSecond
+             * @param int maxTryInInterval
+             * @param int sleepTimeOnError
+             */
+            void setErrorOptions(int tryIntervalSecond, int maxTryInInterval, int sleepTimeOnError) {
+                errorOptions = new MultiErrorOption();
+                errorOptions->tryIntervalSecond = tryIntervalSecond;
+                errorOptions->maxTryInInterval = maxTryInInterval;
+                errorOptions->sleepTimeOnError = sleepTimeOnError;
+            }
+            /**
+             * Get error options
+             * 
+             * @return MultiErrorOption*
+             */
+            MultiErrorOption* getErrorOptions() {
+                return errorOptions;
             }
         protected:
             /**
@@ -51,6 +98,12 @@ namespace PascalSystem {
              * @var bool
              */
             bool isPrepared;
+            /**
+             * Error tru options
+             * 
+             * @var MultiErrorOption*
+             */
+            MultiErrorOption* errorOptions;
             
             /**
              * Prepare command

@@ -130,7 +130,7 @@ void NodePM::Manager::loadSettings(PascalSystem::Settings::SettingsAbstract* set
 
 PascalSystem::Process::ConfigNodeJS* NodePM::Manager::createItemConfigNodeJS(PascalSystem::Settings::SettingsAbstract* settings, std::string sectionKey, std::string globalNodePath, std::string globalNodeArgs) {
     PascalSystem::Process::ConfigNodeJS* itemConf = new PascalSystem::Process::ConfigNodeJS();
-
+    
     itemConf->setNodePath(
         settings->exists("appNodePath", sectionKey)
             ? settings->getStringValue("appNodePath", sectionKey)
@@ -142,7 +142,12 @@ PascalSystem::Process::ConfigNodeJS* NodePM::Manager::createItemConfigNodeJS(Pas
         settings->getStringValue("appPath", sectionKey),
         settings->exists("appArgs", sectionKey) ? settings->getStringValue("appArgs", sectionKey) : ""
     );
-    
+    itemConf->setErrorOptions(
+        settings->exists("tryIntervalSecond") ? settings->getIntegerValue("tryIntervalSecond") : TRY_INTERVAL_SECOND,
+        settings->exists("maxTryInInterval") ? settings->getIntegerValue("maxTryInInterval") : MAX_TRY_IN_INTERVAL,
+        settings->exists("sleepTimeOnError") ? settings->getIntegerValue("sleepTimeOnError") : SLEEP_TIME_ON_ERROR
+    );
+
     return itemConf;
 }
 

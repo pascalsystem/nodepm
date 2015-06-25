@@ -152,6 +152,25 @@ namespace NodePM {
         }
     private:
         /**
+         * Try interval seconds for check error process item
+         * 
+         * @static int
+         */
+        const static int TRY_INTERVAL_SECOND = 3;
+        /**
+         * Maximum try in interval time
+         * 
+         * @static int
+         */
+        const static int MAX_TRY_IN_INTERVAL = 10;
+        /**
+         * Sleep seconds after maximum error on seconds
+         * 
+         * @static int
+         */
+        const static int SLEEP_TIME_ON_ERROR = 60;
+        
+        /**
          * Flag manager is started
          * 
          * @var bool
