@@ -125,7 +125,7 @@ void PascalSystem::Process::Item::runPermanently() {
                 startTime = time(0);
             }
         }
-        std::cout << lastTimeRestart << " | " << startTime << " | " << counter << std::endl;
+        
         run();
         lastTimeRestart = time(0);
         counter++;
@@ -154,3 +154,6 @@ void PascalSystem::Process::Item::stop() {
     pid = -1;
 }
 
+int PascalSystem::Process::Item::getPid() {
+    return pid;
+}

@@ -22,6 +22,10 @@ int NodePM::Manager::runThreadForkItem(std::string appKey, int forkCounter, Pasc
     int res = pthread_create(&thread, NULL, &threadRunItem, params);
     pthread_detach(thread);
     
+    while (itemProc->getPid() <= 0) {
+        usleep(5000);
+    }
+    
     return res;
 }
 
