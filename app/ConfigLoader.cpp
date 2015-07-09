@@ -11,6 +11,10 @@ PascalSystem::Settings::SettingsIni* NodePM::ConfigLoader::getConfig() {
     return new PascalSystem::Settings::SettingsIni(getConfigPath());
 }
 
+PascalSystem::Settings::SettingsIni* NodePM::ConfigLoader::getConfig(std::string configPath) {
+    return new PascalSystem::Settings::SettingsIni(configPath);
+}
+
 std::string NodePM::ConfigLoader::getConfigPath() {
     std::string filePaths = "";
     

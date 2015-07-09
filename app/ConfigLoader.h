@@ -30,6 +30,13 @@ namespace NodePM {
          * @return PascalSystem::Settings::SettingsIni*
          */
         static PascalSystem::Settings::SettingsIni* getConfig();
+        /**
+         * Get config ini
+         * 
+         * @param std::string configPath
+         * @return PascalSystem::Settings::SettingsIni*
+         */
+        static PascalSystem::Settings::SettingsIni* getConfig(std::string configPath);
     private:
         /**
          * Get config path

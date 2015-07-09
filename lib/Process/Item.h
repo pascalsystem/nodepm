@@ -93,6 +93,12 @@ namespace PascalSystem {
              * @return void
              */
             void hardStop();
+            /**
+             * Get current pid item
+             * 
+             * @return int
+             */
+            int getPid();
         private:
             /**
              * Process pid

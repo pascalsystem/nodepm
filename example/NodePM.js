@@ -43,7 +43,7 @@ ProcessSocketConfig.prototype.__addSocket = function(key, filePath) {
         try {
             fs.unlinkSync(filePath);
         } catch (err) {
-            if ((typeof err === 'object') && (typeof err.errno === 'number') && (err.errno === 34)) {
+            if ((typeof err === 'object') && (typeof err.errno === 'number') && ((err.errno === 34) || (err.errno === -2))) {
                 
             } else {
                 throw new Error('PascalSystem Socket can`t restart socket unix file path: ' + filePath);
