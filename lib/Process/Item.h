@@ -21,6 +21,8 @@
 #include <unistd.h>
 #include <pthread.h>
 #include <time.h>
+#include <unistd.h>
+#include <sys/stat.h>
 
 namespace PascalSystem {
     namespace Process {
@@ -66,6 +68,7 @@ namespace PascalSystem {
                 this->config = config;
                 this->logger = logger;
                 this->pid = -1;
+                this->envPortStarted = false;
             }
             /**
              * Get config item
@@ -99,6 +102,14 @@ namespace PascalSystem {
              * @return int
              */
             int getPid();
+            /**
+             * Is env port started
+             * 
+             * @return bool
+             */
+            bool isEnvPortStarted() {
+                return envPortStarted;
+            }
         private:
             /**
              * Process pid
@@ -112,6 +123,12 @@ namespace PascalSystem {
              * @var bool
              */
             bool running;
+            /**
+             * Env port started
+             * 
+             * @var bool
+             */
+            bool envPortStarted;
             /**
              * Process config
              * 
@@ -138,6 +155,13 @@ namespace PascalSystem {
              * @return void
              */
             static void *threadTransmitOutputData(void* This);
+            /**
+             * Thread permission unix domain
+             * 
+             * @param PascalSystem::Process::Item* This
+             * @return 
+             */
+            static void *threadPermissionUnixDomain(void* This);
 
             /**
              * Run item process
@@ -145,6 +169,12 @@ namespace PascalSystem {
              * @return void
              */
             void run();
+            /**
+             * Is env unix domain
+             * 
+             * @return 
+             */
+            bool isEnvUnixDomain();
         };
     }
 }

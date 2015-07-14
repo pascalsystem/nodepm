@@ -18,6 +18,14 @@ int NodePM::Manager::runThreadForkItem(std::string appKey, int forkCounter, Pasc
     params->forkNum = forkCounter;
     params->item = itemProc;
 
+    if (itemProc->getConfig()->hasEnvironment("PORT")) {
+        std::string envPortValue = itemProc->getConfig()->getEnvironment("PORT");
+        if (envPortValue.find("/") == 0) {
+            //indent no check result
+            unlink(envPortValue.c_str());
+        }
+    }
+
     pthread_t thread;
     int res = pthread_create(&thread, NULL, &threadRunItem, params);
     pthread_detach(thread);
@@ -62,7 +70,7 @@ void NodePM::Manager::loadSettings(PascalSystem::Settings::SettingsAbstract* set
             std::list<std::string> socketKeys = getListByString(
                 settings->exists("socketKeys", sectionKey)
                     ? settings->getStringValue("socketKeys", sectionKey)
-                    : "default"
+                    : ""
             );
             
             PascalSystem::Logger::LoggerAbstract* itemLogger = (settings->exists("logErrorFilePath", sectionKey))
@@ -76,20 +84,32 @@ void NodePM::Manager::loadSettings(PascalSystem::Settings::SettingsAbstract* set
             
             ItemFork* itemFork = new ItemFork();
             itemFork->isRunning = false;
+            
+            bool hasEnvPort = false;
             for (int procForkNum = 0; procForkNum < forkNums; procForkNum++) {
                 std::map<std::string, std::string> socketParamsArgs;
                 for (std::list<std::string>::iterator socketKeysIt = socketKeys.begin(); socketKeysIt != socketKeys.end(); socketKeysIt++) {
                     std::ostringstream ss;
                     ss << procForkNum;
                     std::string socketDefinitionType = (*socketKeysIt);
+                    if (socketDefinitionType == "ENVPORT") {
+                        throw new std::runtime_error("can`t use ENVPORT for socket keys, this name is reserved");
+                    }
                     socketParamsArgs[socketDefinitionType] = settings->getStringValue(ss.str(), sectionKey + ".socketFilePath." + socketDefinitionType);
                 }
-
-                PascalSystem::Process::ConfigNodeJS* itemConf = createItemConfigNodeJS(settings, sectionKey, globalNodePath, globalNodeArgs);
+                
+                PascalSystem::Process::ConfigNodeJS* itemConf = createItemConfigNodeJS(settings, sectionKey, globalNodePath, globalNodeArgs, procForkNum);
                 if (socketParamsArgs.size() > 0) {
+                    if (itemConf->hasEnvironment("PORT")) {
+                        throw std::runtime_error("can`t use env PORT with specific socket params");
+                    }
                     itemConf->setSocketPaths(socketParamsArgs);
                 }
 
+                if (itemConf->hasEnvironment("PORT")) {
+                    hasEnvPort = true;
+                }
+                
                 PascalSystem::Process::Item* item = new PascalSystem::Process::Item(itemConf, itemLogger);
                 itemFork->items.push_back(item);
             }
@@ -105,17 +125,21 @@ void NodePM::Manager::loadSettings(PascalSystem::Settings::SettingsAbstract* set
                 }
             }
             if (counterTemporarySocket > 0) {
+                if (hasEnvPort) {
+                    throw std::runtime_error("backup temporary socket not supported env PORT");
+                }
                 if (counterTemporarySocket != socketKeys.size()) {
                     throw std::runtime_error("backup temporary socket numbers diffrent then socket keys");
                 }
                 
-                PascalSystem::Process::ConfigNodeJS* backupItemConf = createItemConfigNodeJS(settings, sectionKey, globalNodePath, globalNodeArgs);
+                PascalSystem::Process::ConfigNodeJS* backupItemConf = createItemConfigNodeJS(settings, sectionKey, globalNodePath, globalNodeArgs, 0);
                 backupItemConf->setSocketPaths(temporarySocketParamsArgs);
                 
                 PascalSystem::Process::Item* backupItem = new PascalSystem::Process::Item(
                     backupItemConf,
                     new PascalSystem::Logger::LoggerDevNull()
                 );
+                
                 this->backupTemporaryItem[sectionKey] = backupItem;
             }
         }
@@ -132,7 +156,7 @@ void NodePM::Manager::loadSettings(PascalSystem::Settings::SettingsAbstract* set
     }
 }
 
-PascalSystem::Process::ConfigNodeJS* NodePM::Manager::createItemConfigNodeJS(PascalSystem::Settings::SettingsAbstract* settings, std::string sectionKey, std::string globalNodePath, std::string globalNodeArgs) {
+PascalSystem::Process::ConfigNodeJS* NodePM::Manager::createItemConfigNodeJS(PascalSystem::Settings::SettingsAbstract* settings, std::string sectionKey, std::string globalNodePath, std::string globalNodeArgs, int forkNum) {
     PascalSystem::Process::ConfigNodeJS* itemConf = new PascalSystem::Process::ConfigNodeJS();
     
     itemConf->setNodePath(
@@ -151,13 +175,40 @@ PascalSystem::Process::ConfigNodeJS* NodePM::Manager::createItemConfigNodeJS(Pas
         settings->exists("maxTryInInterval") ? settings->getIntegerValue("maxTryInInterval") : MAX_TRY_IN_INTERVAL,
         settings->exists("sleepTimeOnError") ? settings->getIntegerValue("sleepTimeOnError") : SLEEP_TIME_ON_ERROR
     );
-
+    
+    std::list<std::string> envValues;
+    std::list<std::string> envKeys = getListByString(
+        settings->exists("envlist", sectionKey) ? settings->getStringValue("envlist", sectionKey) : ""
+    );
+    std::list<std::string>::iterator envKeysIt;
+    for (envKeysIt = envKeys.begin(); envKeysIt != envKeys.end(); envKeysIt++) {
+        std::string envKey = (*envKeysIt);
+        std::ostringstream ss;
+        ss << "env." << envKey << "." << forkNum;
+        std::string envForkKey = ss.str();
+        
+        if (settings->exists(envForkKey, sectionKey)) {
+            std::string envValue = envKey;
+            envValue.append("=");
+            envValue.append(settings->getStringValue(envForkKey, sectionKey));
+            envValues.push_back(envValue);
+        }
+        
+        
+    }
+    itemConf->setEnvironments(envValues);
+    
     return itemConf;
 }
 
 void NodePM::Manager::waitForSocket(PascalSystem::Process::Item* item) {
     PascalSystem::Process::ConfigNodeJS* itemConf = ((PascalSystem::Process::ConfigNodeJS*)item->getConfig());
-    std::map<std::string, std::string> socketArgs = itemConf->getSocketPaths();
+    std::map<std::string, std::string> socketArgs;
+    if (itemConf->hasEnvironment("PORT")) {
+        socketArgs["ENVPORT"] = itemConf->getEnvironment("PORT");
+    } else {
+        socketArgs = itemConf->getSocketPaths();        
+    }
     
     for (std::map<std::string, std::string>::iterator it = socketArgs.begin(); it != socketArgs.end(); it++) {
         do {
@@ -185,6 +236,19 @@ void NodePM::Manager::waitForSocket(PascalSystem::Process::Item* item) {
             usleep(50000);
         } while (true);
     }
+    
+    if (itemConf->hasEnvironment("PORT")) {
+        int counterMax = 30;
+        int counter = 0;
+        do {
+            counter++;
+            if (item->isEnvPortStarted()) {
+                break;
+            }
+            usleep(50000);
+        } while (counter < counterMax);
+    }
+    
     sleep(1);
 }
 

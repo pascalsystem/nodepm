@@ -53,6 +53,7 @@ namespace PascalSystem {
                 isPrepared = false;
                 errorOptions = NULL;
             }
+            
             /**
              * Get prepared command
              * 
@@ -77,6 +78,44 @@ namespace PascalSystem {
                 errorOptions->maxTryInInterval = maxTryInInterval;
                 errorOptions->sleepTimeOnError = sleepTimeOnError;
             }
+            
+            /**
+             * Set process environments
+             * 
+             * @param std::string environments
+             */
+            void setEnvironments(std::list<std::string> environments);
+            
+            /**
+             * Has process environments
+             * 
+             * @return bool
+             */
+            bool hasEnvironments();
+            
+            /**
+             * Set process environments
+             * 
+             * @return std::list<std::string>
+             */
+            std::list<std::string> getEnvironments();
+            
+            /**
+             * Has process environment by key
+             * 
+             * @param std::string key
+             * @return bool
+             */
+            bool hasEnvironment(std::string key);
+            
+            /**
+             * Get process environment by key
+             * 
+             * @param std::string key
+             * @return std::string
+             */
+            std::string getEnvironment(std::string key);
+            
             /**
              * Get error options
              * 
@@ -104,6 +143,12 @@ namespace PascalSystem {
              * @var MultiErrorOption*
              */
             MultiErrorOption* errorOptions;
+            /**
+             * Process environments
+             * 
+             * @var std::list<std::string>
+             */
+            std::list<std::string> environments;
             
             /**
              * Prepare command

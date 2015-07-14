@@ -232,9 +232,10 @@ namespace NodePM {
          * @param std::string sectionKey
          * @param std::string globalNodePath
          * @param std::string globalNodeArgs
+         * @parma int forkNum
          * @return PascalSystem::Process::ConfigNodeJS*
          */
-        PascalSystem::Process::ConfigNodeJS* createItemConfigNodeJS(PascalSystem::Settings::SettingsAbstract* settings, std::string sectionKey, std::string globalNodePath, std::string globalNodeArgs);
+        PascalSystem::Process::ConfigNodeJS* createItemConfigNodeJS(PascalSystem::Settings::SettingsAbstract* settings, std::string sectionKey, std::string globalNodePath, std::string globalNodeArgs, int forkNum);
         /**
          * Wait for item process open sockets from configurationes
          * 
