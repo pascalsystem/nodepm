@@ -23,6 +23,7 @@ void *PascalSystem::Process::Item::threadPermissionUnixDomain(void* This) {
             current++;
             char mode[] = "0777";
             int mask = strtol(mode, 0, 8);
+            usleep(250000);
             if (chmod(envPortValue.c_str(), mask) == 0) {
                 break;
             }
