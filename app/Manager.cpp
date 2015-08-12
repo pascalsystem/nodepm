@@ -210,8 +210,18 @@ void NodePM::Manager::waitForSocket(PascalSystem::Process::Item* item) {
         socketArgs = itemConf->getSocketPaths();        
     }
     
+    time_t startTime = time(0);
     for (std::map<std::string, std::string>::iterator it = socketArgs.begin(); it != socketArgs.end(); it++) {
         do {
+            time_t nowTime = time(0);
+            if ((nowTime - startTime) > MAX_WAIT_TIME_FOR_SOCKET) {
+                std::ostringstream ss;
+                ss << "Reload application error, ";
+                ss << " becouse can`t connect to socket after";
+                ss << " " << MAX_WAIT_TIME_FOR_SOCKET;
+                ss << " seconds.";
+                throw std::runtime_error(ss.str().c_str());
+            }
             if (it->second.find("/") == 0) {
                 int sockTester = socket(AF_UNIX, SOCK_STREAM, 0);
                 struct sockaddr_un servAddr;
