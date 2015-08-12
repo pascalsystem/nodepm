@@ -31,7 +31,7 @@
 #include <map>
 #include <list>
 #include <pthread.h>
-
+#include <time.h>
 
 namespace NodePM {
     /**
@@ -169,6 +169,12 @@ namespace NodePM {
          * @static int
          */
         const static int SLEEP_TIME_ON_ERROR = 60;
+        /**
+         * Max second wait for application open socket
+         * 
+         * @static int
+         */
+        const static int MAX_WAIT_TIME_FOR_SOCKET = 45;
         
         /**
          * Flag manager is started
