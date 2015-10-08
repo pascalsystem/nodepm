@@ -34,7 +34,8 @@ namespace PascalSystem {
              * @param std::string pidFilePath
              */
             ProcSingleton(std::string pidFileName) {
-                this->pidFileName = pidFileName;
+                baseInitData(pidFileName);
+                this->absolutePath = false;
                 this->pidFileDirectory = PascalSystem::Utils::Directory::getLockDirectory();
             }
             /**
@@ -44,10 +45,24 @@ namespace PascalSystem {
              * @param std::string pidFileDirectory
              */
             ProcSingleton(std::string pidFileName, std::string pidFileDirectory) {
-                this->fd = -1;
-                this->filePid = -1;
-                this->pidFileName = pidFileName;
+                baseInitData(pidFileName);
+                this->absolutePath = false;
                 this->pidFileDirectory = pidFileDirectory;
+            }
+            /**
+             * Constructor
+             * 
+             * @param std::string absolutePath
+             * @param bool isAbsolute
+             */
+            ProcSingleton(std::string absolutePath, bool isAbsolute) {
+                baseInitData(absolutePath);
+                if (isAbsolute) {
+                    this->absolutePath = true;
+                } else {
+                    this->absolutePath = false;
+                    this->pidFileDirectory = PascalSystem::Utils::Directory::getLockDirectory();
+                }
             }
             /**
              * Create pid
@@ -55,23 +70,19 @@ namespace PascalSystem {
              * @param int pid
              * @return void
              */
-            bool createPid(int pid) {
-                return createPid(pid, "");
-            }
-            /**
-             * Create pid
-             * 
-             * @param int pid
-             * @param std::string data
-             * @return bool
-             */
-            bool createPid(int pid, std::string data);
+            void createPid(int pid);
             /**
              * Destroy pid
              * 
              * @return void
              */
             void destroyPid();
+            /**
+             * Is active process singleton
+             * 
+             * @return bool
+             */
+            bool isActive();
         private:
             /**
              * Pid file descriptor
@@ -79,6 +90,12 @@ namespace PascalSystem {
              * @var int
              */
             int fd;
+            /**
+             * Is absolute path
+             * 
+             * @var bool
+             */
+            bool absolutePath;
             /**
              * Pid file name
              * 
@@ -105,10 +122,54 @@ namespace PascalSystem {
             std::string dataPid;
             
             /**
+             * Initialize object data
+             * 
+             * @return 
+             */
+            void baseInitData(std::string pidFileName) {
+                this->fd = -1;
+                this->filePid = -1;
+                this->absolutePath = false;
+                this->pidFileName = pidFileName;
+            }
+            /**
+             * Get lock descriptor
+             * Dont create file only, open and try lock
+             * 
+             * @return int
+             */
+            int getLockDescriptor() {
+                getLockDescriptor(false);
+            }
+            /**
+             * Try create lock file descriptor
+             * 
+             * @param bool create
+             * @return int
+             */
+            int getLockDescriptor(bool create);
+            /**
+             * Release lock file descriptor
+             * 
+             * @param int lockFD
+             */
+            void releaseLockDescriptor(int lockFD);
+            /**
+             * Get pid file line by process pid and data
+             * 
+             * @param int pid
+             * @param std::string data
+             * @return std::string
+             */
+            std::string getPidFileLine(int pid);
+            /**
              * Get pid file path
              * @return 
              */
             std::string getPidFilePath() {
+                if (absolutePath) {
+                    return pidFileName;
+                }
                 return pidFileDirectory + "/" + pidFileName;
             }
         };

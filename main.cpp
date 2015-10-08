@@ -10,12 +10,18 @@
 #include <unistd.h>
 #include "./app/Manager.h"
 #include "./app/HelpMe.h"
+#include "./app/ConfigLoader.h"
+#include "./lib/Settings/SettingsAbstract.h"
 #include "./lib/Command/CommandStdIn.h"
 #include "./lib/Logger/LoggerFileOut.h"
-#include "lib/Utils/ProcSingleton.h"
-#include "lib/Command/CommandUnixSock.h"
+#include "./lib/Utils/ProcSingleton.h"
+#include "./lib/Command/CommandUnixSock.h"
 
 using namespace NodePM;
+using namespace PascalSystem::Settings;
+using namespace PascalSystem::Utils;
+using namespace PascalSystem::Logger;
+using namespace PascalSystem::Command;
 
 /**
  * Manager instance
@@ -81,7 +87,7 @@ std::string procCommand(std::string msg) {
  * 
  * @param PascalSystem::Logger::LoggerFileOut* log
  */
-void redirectConsoleOutToFile(PascalSystem::Logger::LoggerFileOut* log) {
+void redirectConsoleOutToFile(LoggerFileOut* log) {
     int stdOut[2];
     int stdErr[2];
     pipe(stdOut);
@@ -89,8 +95,32 @@ void redirectConsoleOutToFile(PascalSystem::Logger::LoggerFileOut* log) {
     dup2(stdOut[1], STDOUT_FILENO);
     dup2(stdErr[1], STDERR_FILENO);
     
-    log->asyncWriteFromHandler(stdOut[0], PascalSystem::Logger::LoggerAbstract::LOG_TYPE_INFO);
-    log->asyncWriteFromHandler(stdErr[0], PascalSystem::Logger::LoggerAbstract::LOG_TYPE_ERR);
+    log->asyncWriteFromHandler(stdOut[0], LoggerAbstract::LOG_TYPE_INFO);
+    log->asyncWriteFromHandler(stdErr[0], LoggerAbstract::LOG_TYPE_ERR);
+}
+
+/**
+ * Run manager in console mode
+ * 
+ * @param PascalSystem::Settings::SettingsAbstract* config
+ * @param PascalSystem::Utils::ProcSingleton* procPid
+ * @return 
+ */
+int runConsoleMode(SettingsAbstract* config, ProcSingleton* procPid) {
+    if (procPid->isActive()) {
+        std::cout << std::endl;
+        std::cout << "Another instance runnig ( console mode not available )" << std::endl;
+        std::cout << std::endl;
+        return EXIT_SUCCESS;
+    }
+    procPid->createPid(getpid());
+    commandMode = true;
+    manager = new Manager(config);
+    CommandStdIn* cmd = new CommandStdIn();
+    cmd->setHandler(procCommand);
+    cmd->run();
+    procPid->destroyPid();
+    return EXIT_SUCCESS;    
 }
 
 /*
@@ -105,15 +135,16 @@ int main(int argc, char** argv) {
         return EXIT_FAILURE;
     }
     
+    SettingsAbstract* config = ConfigLoader::getConfig();
+    config->load();
+    
+    std::string pidFileName = config->getStringValue("managerPid");
+    ProcSingleton* procPid = new ProcSingleton(pidFileName, true);
+    
     std::string appCommand = "";
     for (int i=1; i<argc;i++) {
         if (strcmp(argv[i], "--console=command") == 0) {
-            commandMode = true;
-            manager = new Manager();
-            PascalSystem::Command::CommandStdIn* cmd = new PascalSystem::Command::CommandStdIn();
-            cmd->setHandler(procCommand);
-            cmd->run();
-            return EXIT_SUCCESS;
+            return runConsoleMode(config, procPid);
         } else if (strcmp(argv[i], "--help") == 0) {
             std::cout << NodePM::HelpMe::getData();
             return EXIT_SUCCESS;
@@ -125,13 +156,11 @@ int main(int argc, char** argv) {
         appCommand.append(argv[i]);
     }
     
-    std::string unixPath = PascalSystem::Utils::Directory::getSockDirectory() + "/psnodepm.sock";
-    PascalSystem::Utils::ProcSingleton* procPid = new PascalSystem::Utils::ProcSingleton("psnodepm.pid");
-    bool dameonLive = procPid->createPid(getpid()) ? false : true;
+    std::string managerSocketPath = config->getStringValue("managerSocket");
     
-    if (dameonLive) {
+    if (procPid->isActive()) {
         std::cout << "Send message command: " << appCommand << " to NodePM:" << std::endl;
-        std::string result = PascalSystem::Command::CommandUnixSock::sendMessageToServer(unixPath, appCommand);
+        std::string result = CommandUnixSock::sendMessageToServer(managerSocketPath, appCommand);
         std::cout << "Result:" << result << std::endl;
         return EXIT_SUCCESS;
     }
@@ -143,15 +172,15 @@ int main(int argc, char** argv) {
         return EXIT_FAILURE;
     }
     
-    manager = new Manager();
-    if (!manager->getConfig()->exists("nodepmErrorFilePath") || !manager->getConfig()->exists("nodepmDebugFilePath")) {
+    manager = new Manager(config);
+    if (!config->exists("nodepmErrorFilePath") || !config->exists("nodepmDebugFilePath")) {
         std::cerr << std::endl;
         std::cerr << "Not found in settings nodepmErrorFilePath or nodepmDebugFilePath properties.";
         std::cerr << std::endl;
         return EXIT_FAILURE;
     }
-    std::string nodepmErrorFilePath = manager->getConfig()->getStringValue("nodepmErrorFilePath");
-    std::string nodepmDebugFilePath = manager->getConfig()->getStringValue("nodepmDebugFilePath");
+    std::string nodepmErrorFilePath = config->getStringValue("nodepmErrorFilePath");
+    std::string nodepmDebugFilePath = config->getStringValue("nodepmDebugFilePath");
 
     pid_t dameonPid = fork();
     if (dameonPid < 0) {
@@ -160,11 +189,13 @@ int main(int argc, char** argv) {
         std::cerr << std::endl;
         return EXIT_FAILURE;
     } else if (dameonPid == 0) {
-        PascalSystem::Logger::LoggerFileOut* logger = new PascalSystem::Logger::LoggerFileOut(nodepmErrorFilePath, nodepmDebugFilePath);
+        LoggerFileOut* logger = new LoggerFileOut(nodepmErrorFilePath, nodepmDebugFilePath);
         redirectConsoleOutToFile(logger);
         
-        PascalSystem::Command::CommandUnixSock::reqisterInstance(unixPath);
-        PascalSystem::Command::CommandUnixSock* cmd = PascalSystem::Command::CommandUnixSock::getInstance();
+        procPid->createPid(getpid());
+        
+        CommandUnixSock::reqisterInstance(managerSocketPath);
+        CommandUnixSock* cmd = CommandUnixSock::getInstance();
         cmd->setHandler(&procCommand);
         cmd->executeCommand("start");
         cmd->run();

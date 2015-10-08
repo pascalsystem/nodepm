@@ -36,19 +36,25 @@ if [ "$1" == "restart" ] && [ "$2" == "" ]
 then
     ${NODEPMAPP} stop
     ${NODEPMAPP} start
+    exit
 fi
 
 if [ "$1" == "restart" ] && [ "$2" != "" ]
 then
     ${NODEPMAPP} restart $2
+    exit
 fi
 
 if [ "$1" == "reload" ] && [ "$2" == "" ]
 then
     ${NODEPMAPP} reload
+    exit
 fi
 
 if [ "$1" == "reload" ] && [ "$2" != "" ]
 then
     ${NODEPMAPP} reload $2
+    exit
 fi
+
+${NODEPMAPP} $1

@@ -31,7 +31,7 @@
 #include <map>
 #include <list>
 #include <pthread.h>
-
+#include <time.h>
 
 namespace NodePM {
     /**
@@ -86,13 +86,13 @@ namespace NodePM {
         /**
          * Constructor
          * 
+         * @param PascalSystem::Settings::SettingsAbstract settings
          */
-        Manager() {
+        Manager(PascalSystem::Settings::SettingsAbstract* settings) {
             this->logger = new PascalSystem::Logger::LoggerConsole();
             this->isStart = false;
-            config = NULL;
 
-            loadSettings();
+            loadSettings(settings);
         }
         /**
          * Start all application
@@ -150,19 +150,32 @@ namespace NodePM {
         void reload(std::string appKey) {
             refreshProc(appKey, true);
         }
-        /**
-         * Get setting
-         * 
-         * @return PascalSystem::Settings::SettingsAbstract*
-         */
-        PascalSystem::Settings::SettingsAbstract* getConfig() {
-            if (config == NULL) {
-                throw std::runtime_error("Settings not loaded.");
-            }
-            
-            return config;
-        }
     private:
+        /**
+         * Try interval seconds for check error process item
+         * 
+         * @static int
+         */
+        const static int TRY_INTERVAL_SECOND = 3;
+        /**
+         * Maximum try in interval time
+         * 
+         * @static int
+         */
+        const static int MAX_TRY_IN_INTERVAL = 10;
+        /**
+         * Sleep seconds after maximum error on seconds
+         * 
+         * @static int
+         */
+        const static int SLEEP_TIME_ON_ERROR = 60;
+        /**
+         * Max second wait for application open socket
+         * 
+         * @static int
+         */
+        const static int MAX_WAIT_TIME_FOR_SOCKET = 45;
+        
         /**
          * Flag manager is started
          * 
@@ -193,12 +206,6 @@ namespace NodePM {
          * @var PascalSystem::Logger::LoggerAbstract*
          */
         PascalSystem::Logger::LoggerAbstract* logger;
-        /**
-         * Settings abstract
-         * 
-         * @var PascalSystem::Settings::SettingsAbstract*
-         */
-        PascalSystem::Settings::SettingsAbstract* config;
         
         /**
          * Thread run item
@@ -220,15 +227,21 @@ namespace NodePM {
         /**
          * Load settings
          * 
+         * @param PascalSystem::Settings::SettingsAbstract settings
          * @retuen void
          */
-        void loadSettings();
+        void loadSettings(PascalSystem::Settings::SettingsAbstract* settings);
         /**
          * Create NodeJS Item configuration
          * 
+         * @param PascalSystem::Settings::SettingsAbstract* settings
+         * @param std::string sectionKey
+         * @param std::string globalNodePath
+         * @param std::string globalNodeArgs
+         * @parma int forkNum
          * @return PascalSystem::Process::ConfigNodeJS*
          */
-        PascalSystem::Process::ConfigNodeJS* createItemConfigNodeJS(std::string sectionKey, std::string globalNodePath, std::string globalNodeArgs);
+        PascalSystem::Process::ConfigNodeJS* createItemConfigNodeJS(PascalSystem::Settings::SettingsAbstract* settings, std::string sectionKey, std::string globalNodePath, std::string globalNodeArgs, int forkNum);
         /**
          * Wait for item process open sockets from configurationes
          * 
@@ -243,12 +256,6 @@ namespace NodePM {
          * @return void
          */
         void refreshProc(std::string appKey, bool reloadMode);
-        /**
-         * Get config file path
-         * 
-         * @return std::string
-         */
-        std::string getConfigFilePath();
         /**
          * Check file is exists
          * 

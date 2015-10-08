@@ -35,6 +35,7 @@ OBJECTDIR=${CND_BUILDDIR}/${CND_CONF}/${CND_PLATFORM}
 
 # Object Files
 OBJECTFILES= \
+	${OBJECTDIR}/app/ConfigLoader.o \
 	${OBJECTDIR}/app/HelpMe.o \
 	${OBJECTDIR}/app/Manager.o \
 	${OBJECTDIR}/lib/Command/CommandAbstract.o \
@@ -54,6 +55,7 @@ OBJECTFILES= \
 	${OBJECTDIR}/lib/Utils/Directory.o \
 	${OBJECTDIR}/lib/Utils/FileWriter.o \
 	${OBJECTDIR}/lib/Utils/ProcSingleton.o \
+	${OBJECTDIR}/lib/Utils/User.o \
 	${OBJECTDIR}/main.o
 
 
@@ -80,6 +82,11 @@ LDLIBSOPTIONS=-lpthread
 ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/nodepm: ${OBJECTFILES}
 	${MKDIR} -p ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}
 	${LINK.cc} -o ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/nodepm ${OBJECTFILES} ${LDLIBSOPTIONS}
+
+${OBJECTDIR}/app/ConfigLoader.o: app/ConfigLoader.cpp 
+	${MKDIR} -p ${OBJECTDIR}/app
+	${RM} "$@.d"
+	$(COMPILE.cc) -g -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/app/ConfigLoader.o app/ConfigLoader.cpp
 
 ${OBJECTDIR}/app/HelpMe.o: app/HelpMe.cpp 
 	${MKDIR} -p ${OBJECTDIR}/app
@@ -175,6 +182,11 @@ ${OBJECTDIR}/lib/Utils/ProcSingleton.o: lib/Utils/ProcSingleton.cpp
 	${MKDIR} -p ${OBJECTDIR}/lib/Utils
 	${RM} "$@.d"
 	$(COMPILE.cc) -g -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/lib/Utils/ProcSingleton.o lib/Utils/ProcSingleton.cpp
+
+${OBJECTDIR}/lib/Utils/User.o: lib/Utils/User.cpp 
+	${MKDIR} -p ${OBJECTDIR}/lib/Utils
+	${RM} "$@.d"
+	$(COMPILE.cc) -g -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/lib/Utils/User.o lib/Utils/User.cpp
 
 ${OBJECTDIR}/main.o: main.cpp 
 	${MKDIR} -p ${OBJECTDIR}
