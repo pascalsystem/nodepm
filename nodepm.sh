@@ -1,6 +1,6 @@
 #!/bin/bash
 
-NODEPMAPP="./dist/Debug/GNU-Linux-x86/nodepm"
+NODEPMAPP="`dirname $0`/dist/Debug/GNU-Linux-x86/nodepm"
 
 if [ "$1" = "" ]
 then
