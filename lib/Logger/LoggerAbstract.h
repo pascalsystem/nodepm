@@ -75,7 +75,7 @@ namespace PascalSystem {
              * 
              */
             LoggerAbstract() {
-                logDateTimeFormat = "%Y-%m-%dT%H:%I:%S %z";
+                logDateTimeFormat = "%Y-%m-%dT%H:%M:%S %z";
             }
             /**
              * Set log date time format

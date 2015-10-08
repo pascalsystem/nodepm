@@ -12,8 +12,29 @@ void *PascalSystem::Process::Item::threadTransmitOutputData(void* This) {
     data->output->writeFromHandler(data->handler, data->type);
 }
 
+void *PascalSystem::Process::Item::threadPermissionUnixDomain(void* This) {
+    PascalSystem::Process::Item* item = ((PascalSystem::Process::Item*)This);
+    sleep(1);
+    if (item->isEnvUnixDomain()) {
+        std::string envPortValue = item->getConfig()->getEnvironment("PORT");
+        int maxTryNum = 30;
+        int current = 0;
+        do {
+            current++;
+            char mode[] = "0777";
+            int mask = strtol(mode, 0, 8);
+            usleep(250000);
+            if (chmod(envPortValue.c_str(), mask) == 0) {
+                break;
+            }
+        } while (current < maxTryNum);
+    }
+    item->envPortStarted = true;
+}
+
 void PascalSystem::Process::Item::run() {
     pid = -1;
+    envPortStarted = false;
     
     int pipeOut[2];
     int pipeErr[2];
@@ -59,7 +80,23 @@ void PascalSystem::Process::Item::run() {
         }
         args[commandIndex] = 0;
         
-        int execRes = execv(args[0], const_cast<char**>(args));
+        int execRes;
+        if (config->hasEnvironments()) {
+            if (this->isEnvUnixDomain()) {
+                unlink(config->getEnvironment("PORT").c_str());
+            }
+            std::list<std::string> environments = config->getEnvironments();
+            int envIndex = 0;
+            const char* envArgs[environments.size() + 1];
+            for (std::list<std::string>::iterator it = environments.begin(); it != environments.end(); it++) {
+                envArgs[envIndex++] = it->c_str();
+            }
+            envArgs[envIndex] = 0;
+            execRes = execve(args[0], const_cast<char**>(args), const_cast<char**>(envArgs));
+        } else {
+            execRes = execv(args[0], const_cast<char**>(args));
+        }
+        
         if (execRes != 0) {
             std::ostringstream ss;
             ss << "Error start process: ";
@@ -84,6 +121,10 @@ void PascalSystem::Process::Item::run() {
     
     close(pipeOut[1]);
     close(pipeErr[1]);
+    
+    pthread_t tP;
+    pthread_create(&tP, NULL, &threadPermissionUnixDomain, this);
+    pthread_detach(tP);
     
     char bufPid[11];
     int bufPidBytes = read(init[0], &bufPid, 11);
@@ -110,8 +151,25 @@ void PascalSystem::Process::Item::run() {
 
 void PascalSystem::Process::Item::runPermanently() {
     running = true;
+    int counter = 0;
+    time_t lastTimeRestart = 0;
+    time_t startTime = time(0);
+    
+    MultiErrorOption* errorOptions = config->getErrorOptions();
+    
     while (running) {
+        if ((lastTimeRestart != 0) && (lastTimeRestart <= startTime + errorOptions->tryIntervalSecond)) {
+            counter++;
+            if (counter > errorOptions->maxTryInInterval) {
+                counter = 0;
+                sleep(errorOptions->sleepTimeOnError);
+                startTime = time(0);
+            }
+        }
+        
         run();
+        lastTimeRestart = time(0);
+        counter++;
     }
 }
 
@@ -119,16 +177,15 @@ void PascalSystem::Process::Item::hardStop() {
     running = false;
     kill(pid, SIGKILL);
     while ((pid > 0) && (kill(pid, 0) == 0)) {
-        
+        usleep(50000);
     }
     pid = -1;
 }
 
 void PascalSystem::Process::Item::stop() {
     running = false;
-    kill(pid, SIGTERM);
     int counterSigTerm = 0;
-    while ((pid > 0) && (kill(pid, 0) == 0) && (counterSigTerm < 240)) {
+    while ((pid > 0) && (kill(pid, 0) == 0) && (counterSigTerm < 5)) {
         usleep(50000);
         counterSigTerm++;
     }
@@ -138,3 +195,14 @@ void PascalSystem::Process::Item::stop() {
     pid = -1;
 }
 
+int PascalSystem::Process::Item::getPid() {
+    return pid;
+}
+
+bool PascalSystem::Process::Item::isEnvUnixDomain() {
+    std::string envPort = config->getEnvironment("PORT");
+    if ((envPort.length() > 1) && (envPort.find("/") == 0)) {
+        return true;
+    }
+    return false;
+}
