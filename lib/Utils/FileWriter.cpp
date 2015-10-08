@@ -74,7 +74,7 @@ std::string PascalSystem::Utils::FileWriter::getFilePath() {
     }
     if (patternDateMinute) {
         std::ostringstream s;
-        if (aTime < 0) {
+        if (aTime->tm_min < 0) {
             s << "0" << aTime->tm_min;
         } else {
             s << aTime->tm_min;
@@ -83,7 +83,7 @@ std::string PascalSystem::Utils::FileWriter::getFilePath() {
     }
     if (patternDateSecond) {
         std::ostringstream s;
-        if (aTime < 0) {
+        if (aTime->tm_sec < 0) {
             s << "0" << aTime->tm_sec;
         } else {
             s << aTime->tm_sec;
