@@ -1,0 +1,388 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configurationDescriptor version="95">
+  <logicalFolder name="root" displayName="root" projectFiles="true" kind="ROOT">
+    <logicalFolder name="HeaderFiles"
+                   displayName="Header Files"
+                   projectFiles="true">
+      <logicalFolder name="f1" displayName="Apps" projectFiles="true">
+        <itemPath>app/ConfigLoader.h</itemPath>
+        <itemPath>app/HelpMe.h</itemPath>
+        <itemPath>app/Manager.h</itemPath>
+        <itemPath>app/ProxyClient.h</itemPath>
+      </logicalFolder>
+      <logicalFolder name="f3" displayName="Library" projectFiles="true">
+        <logicalFolder name="f1" displayName="Command" projectFiles="true">
+          <itemPath>lib/Command/CommandAbstract.h</itemPath>
+          <itemPath>lib/Command/CommandStdIn.h</itemPath>
+          <itemPath>lib/Command/CommandUnixSock.h</itemPath>
+        </logicalFolder>
+        <logicalFolder name="f2" displayName="Logger" projectFiles="true">
+          <itemPath>lib/Logger/LoggerAbstract.h</itemPath>
+          <itemPath>lib/Logger/LoggerConsole.h</itemPath>
+          <itemPath>lib/Logger/LoggerFileOut.h</itemPath>
+        </logicalFolder>
+        <logicalFolder name="f3" displayName="Process" projectFiles="true">
+          <itemPath>lib/Process/ConfigAbstract.h</itemPath>
+          <itemPath>lib/Process/ConfigNodeJS.h</itemPath>
+          <itemPath>lib/Process/Item.h</itemPath>
+        </logicalFolder>
+        <logicalFolder name="f4" displayName="Settings" projectFiles="true">
+          <itemPath>lib/Settings/SettingsAbstract.h</itemPath>
+          <itemPath>lib/Settings/SettingsIni.h</itemPath>
+        </logicalFolder>
+        <logicalFolder name="f5" displayName="Socket" projectFiles="true">
+          <itemPath>lib/Socket/SocketServerAbstract.h</itemPath>
+          <itemPath>lib/Socket/SocketServerPort.h</itemPath>
+          <itemPath>lib/Socket/SocketServerUnix.h</itemPath>
+        </logicalFolder>
+        <logicalFolder name="f6" displayName="Utils" projectFiles="true">
+          <itemPath>lib/Utils/Directory.h</itemPath>
+          <itemPath>lib/Utils/FileWriter.h</itemPath>
+          <itemPath>lib/Utils/ProcSingleton.h</itemPath>
+          <itemPath>lib/Utils/User.h</itemPath>
+        </logicalFolder>
+      </logicalFolder>
+    </logicalFolder>
+    <logicalFolder name="ResourceFiles"
+                   displayName="Resource Files"
+                   projectFiles="true">
+      <logicalFolder name="f1" displayName="apps" projectFiles="true">
+        <itemPath>example/NodePM.js</itemPath>
+        <itemPath>example/app_env_socket.js</itemPath>
+        <itemPath>example/app_fork.js</itemPath>
+        <itemPath>example/app_many_socket.js</itemPath>
+        <itemPath>example/app_without_socket.js</itemPath>
+        <itemPath>example/hello.js</itemPath>
+      </logicalFolder>
+      <logicalFolder name="f2" displayName="info" projectFiles="true">
+        <itemPath>LICENSE</itemPath>
+        <itemPath>README.md</itemPath>
+      </logicalFolder>
+      <itemPath>.gitignore</itemPath>
+      <itemPath>config.ini</itemPath>
+      <itemPath>nodepm.sh</itemPath>
+    </logicalFolder>
+    <logicalFolder name="SourceFiles"
+                   displayName="Source Files"
+                   projectFiles="true">
+      <logicalFolder name="f1" displayName="Apps" projectFiles="true">
+        <itemPath>app/ConfigLoader.cpp</itemPath>
+        <itemPath>app/HelpMe.cpp</itemPath>
+        <itemPath>app/Manager.cpp</itemPath>
+        <itemPath>app/ProxyClient.cpp</itemPath>
+      </logicalFolder>
+      <logicalFolder name="f3" displayName="Library" projectFiles="true">
+        <logicalFolder name="f1" displayName="Command" projectFiles="true">
+          <itemPath>lib/Command/CommandAbstract.cpp</itemPath>
+          <itemPath>lib/Command/CommandStdIn.cpp</itemPath>
+          <itemPath>lib/Command/CommandUnixSock.cpp</itemPath>
+        </logicalFolder>
+        <logicalFolder name="f2" displayName="Logger" projectFiles="true">
+          <itemPath>lib/Logger/LoggerAbstract.cpp</itemPath>
+          <itemPath>lib/Logger/LoggerConsole.cpp</itemPath>
+          <itemPath>lib/Logger/LoggerFileOut.cpp</itemPath>
+        </logicalFolder>
+        <logicalFolder name="f3" displayName="Process" projectFiles="true">
+          <itemPath>lib/Process/ConfigAbstract.cpp</itemPath>
+          <itemPath>lib/Process/ConfigNodeJS.cpp</itemPath>
+          <itemPath>lib/Process/Item.cpp</itemPath>
+        </logicalFolder>
+        <logicalFolder name="f4" displayName="Settings" projectFiles="true">
+          <itemPath>lib/Settings/SettingsAbstract.cpp</itemPath>
+          <itemPath>lib/Settings/SettingsIni.cpp</itemPath>
+        </logicalFolder>
+        <logicalFolder name="f5" displayName="Socket" projectFiles="true">
+          <itemPath>lib/Socket/SocketServerAbstract.cpp</itemPath>
+          <itemPath>lib/Socket/SocketServerPort.cpp</itemPath>
+          <itemPath>lib/Socket/SocketServerUnix.cpp</itemPath>
+        </logicalFolder>
+        <logicalFolder name="f6" displayName="Utils" projectFiles="true">
+          <itemPath>lib/Utils/Directory.cpp</itemPath>
+          <itemPath>lib/Utils/FileWriter.cpp</itemPath>
+          <itemPath>lib/Utils/ProcSingleton.cpp</itemPath>
+          <itemPath>lib/Utils/User.cpp</itemPath>
+        </logicalFolder>
+      </logicalFolder>
+      <itemPath>main.cpp</itemPath>
+    </logicalFolder>
+    <logicalFolder name="TestFiles"
+                   displayName="Test Files"
+                   projectFiles="false"
+                   kind="TEST_LOGICAL_FOLDER">
+    </logicalFolder>
+    <logicalFolder name="ExternalFiles"
+                   displayName="Important Files"
+                   projectFiles="false"
+                   kind="IMPORTANT_FILES_FOLDER">
+      <itemPath>Makefile</itemPath>
+    </logicalFolder>
+  </logicalFolder>
+  <projectmakefile>Makefile</projectmakefile>
+  <confs>
+    <conf name="Debug" type="1">
+      <toolsSet>
+        <compilerSet>default</compilerSet>
+        <dependencyChecking>true</dependencyChecking>
+        <rebuildPropChanged>false</rebuildPropChanged>
+      </toolsSet>
+      <compileType>
+        <linkerTool>
+          <linkerLibItems>
+            <linkerLibStdlibItem>PosixThreads</linkerLibStdlibItem>
+          </linkerLibItems>
+        </linkerTool>
+      </compileType>
+      <item path=".gitignore" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="LICENSE" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="README.md" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="app/ConfigLoader.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="app/ConfigLoader.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="app/HelpMe.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="app/HelpMe.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="app/Manager.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="app/Manager.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="app/ProxyClient.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="app/ProxyClient.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="config.ini" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="example/NodePM.js" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="example/app_env_socket.js" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="example/app_fork.js" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="example/app_many_socket.js" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="example/app_without_socket.js" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="example/hello.js" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="lib/Command/CommandAbstract.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="lib/Command/CommandAbstract.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="lib/Command/CommandStdIn.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="lib/Command/CommandStdIn.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="lib/Command/CommandUnixSock.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="lib/Command/CommandUnixSock.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="lib/Logger/LoggerAbstract.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="lib/Logger/LoggerAbstract.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="lib/Logger/LoggerConsole.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="lib/Logger/LoggerConsole.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="lib/Logger/LoggerFileOut.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="lib/Logger/LoggerFileOut.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="lib/Process/ConfigAbstract.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="lib/Process/ConfigAbstract.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="lib/Process/ConfigNodeJS.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="lib/Process/ConfigNodeJS.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="lib/Process/Item.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="lib/Process/Item.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="lib/Settings/SettingsAbstract.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="lib/Settings/SettingsAbstract.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="lib/Settings/SettingsIni.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="lib/Settings/SettingsIni.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="lib/Socket/SocketServerAbstract.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="lib/Socket/SocketServerAbstract.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="lib/Socket/SocketServerPort.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="lib/Socket/SocketServerPort.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="lib/Socket/SocketServerUnix.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="lib/Socket/SocketServerUnix.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="lib/Utils/Directory.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="lib/Utils/Directory.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="lib/Utils/FileWriter.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="lib/Utils/FileWriter.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="lib/Utils/ProcSingleton.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="lib/Utils/ProcSingleton.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="lib/Utils/User.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="lib/Utils/User.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="main.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="nodepm.sh" ex="false" tool="3" flavor2="0">
+      </item>
+    </conf>
+    <conf name="Release" type="1">
+      <toolsSet>
+        <compilerSet>default</compilerSet>
+        <dependencyChecking>true</dependencyChecking>
+        <rebuildPropChanged>false</rebuildPropChanged>
+      </toolsSet>
+      <compileType>
+        <cTool>
+          <developmentMode>5</developmentMode>
+        </cTool>
+        <ccTool>
+          <developmentMode>5</developmentMode>
+        </ccTool>
+        <fortranCompilerTool>
+          <developmentMode>5</developmentMode>
+        </fortranCompilerTool>
+        <asmTool>
+          <developmentMode>5</developmentMode>
+        </asmTool>
+      </compileType>
+      <item path=".gitignore" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="LICENSE" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="README.md" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="app/ConfigLoader.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="app/ConfigLoader.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="app/HelpMe.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="app/HelpMe.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="app/Manager.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="app/Manager.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="app/ProxyClient.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="app/ProxyClient.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="config.ini" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="example/NodePM.js" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="example/app_env_socket.js" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="example/app_fork.js" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="example/app_many_socket.js" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="example/app_without_socket.js" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="example/hello.js" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="lib/Command/CommandAbstract.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="lib/Command/CommandAbstract.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="lib/Command/CommandStdIn.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="lib/Command/CommandStdIn.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="lib/Command/CommandUnixSock.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="lib/Command/CommandUnixSock.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="lib/Logger/LoggerAbstract.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="lib/Logger/LoggerAbstract.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="lib/Logger/LoggerConsole.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="lib/Logger/LoggerConsole.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="lib/Logger/LoggerFileOut.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="lib/Logger/LoggerFileOut.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="lib/Process/ConfigAbstract.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="lib/Process/ConfigAbstract.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="lib/Process/ConfigNodeJS.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="lib/Process/ConfigNodeJS.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="lib/Process/Item.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="lib/Process/Item.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="lib/Settings/SettingsAbstract.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="lib/Settings/SettingsAbstract.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="lib/Settings/SettingsIni.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="lib/Settings/SettingsIni.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="lib/Socket/SocketServerAbstract.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="lib/Socket/SocketServerAbstract.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="lib/Socket/SocketServerPort.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="lib/Socket/SocketServerPort.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="lib/Socket/SocketServerUnix.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="lib/Socket/SocketServerUnix.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="lib/Utils/Directory.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="lib/Utils/Directory.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="lib/Utils/FileWriter.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="lib/Utils/FileWriter.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="lib/Utils/ProcSingleton.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="lib/Utils/ProcSingleton.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="lib/Utils/User.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="lib/Utils/User.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="main.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="nodepm.sh" ex="false" tool="3" flavor2="0">
+      </item>
+    </conf>
+  </confs>
+</configurationDescriptor>
