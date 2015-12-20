@@ -38,6 +38,7 @@ OBJECTFILES= \
 	${OBJECTDIR}/app/ConfigLoader.o \
 	${OBJECTDIR}/app/HelpMe.o \
 	${OBJECTDIR}/app/Manager.o \
+	${OBJECTDIR}/app/ProxyClient.o \
 	${OBJECTDIR}/lib/Command/CommandAbstract.o \
 	${OBJECTDIR}/lib/Command/CommandStdIn.o \
 	${OBJECTDIR}/lib/Command/CommandUnixSock.o \
@@ -97,6 +98,11 @@ ${OBJECTDIR}/app/Manager.o: app/Manager.cpp
 	${MKDIR} -p ${OBJECTDIR}/app
 	${RM} "$@.d"
 	$(COMPILE.cc) -g -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/app/Manager.o app/Manager.cpp
+
+${OBJECTDIR}/app/ProxyClient.o: app/ProxyClient.cpp 
+	${MKDIR} -p ${OBJECTDIR}/app
+	${RM} "$@.d"
+	$(COMPILE.cc) -g -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/app/ProxyClient.o app/ProxyClient.cpp
 
 ${OBJECTDIR}/lib/Command/CommandAbstract.o: lib/Command/CommandAbstract.cpp 
 	${MKDIR} -p ${OBJECTDIR}/lib/Command
