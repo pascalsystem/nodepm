@@ -176,6 +176,18 @@ PascalSystem::Process::ConfigNodeJS* NodePM::Manager::createItemConfigNodeJS(Pas
         settings->exists("sleepTimeOnError") ? settings->getIntegerValue("sleepTimeOnError") : SLEEP_TIME_ON_ERROR
     );
     
+    itemConf->setSafeReloadOptionsByParameters(
+        settings->exists("safeReloadOn", sectionKey)
+            ? (settings->getIntegerValue("safeReloadOn", sectionKey) > 0) ? true : false
+            : false,
+        settings->exists("safeReloadMaxTry", sectionKey)
+            ? settings->getIntegerValue("safeReloadMaxTry", sectionKey)
+            : SAFE_RELOAD_MAX_TRY,
+        settings->exists("safeReloadInterval", sectionKey)
+            ? settings->getIntegerValue("safeReloadInterval", sectionKey)
+            : SAFE_RELOAD_INTERVAL
+    );
+    
     std::list<std::string> envValues;
     std::list<std::string> envKeys = getListByString(
         settings->exists("envlist", sectionKey) ? settings->getStringValue("envlist", sectionKey) : ""

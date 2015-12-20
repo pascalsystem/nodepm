@@ -164,6 +164,18 @@ namespace NodePM {
          */
         const static int MAX_TRY_IN_INTERVAL = 10;
         /**
+         * Default maximum number try send signal term
+         * 
+         * @static int
+         */
+        const static int SAFE_RELOAD_MAX_TRY = 10;
+        /**
+         * Default interval second betwen send signals
+         * 
+         * @static int
+         */
+        const static int SAFE_RELOAD_INTERVAL = 2;
+        /**
          * Sleep seconds after maximum error on seconds
          * 
          * @static int
@@ -175,7 +187,7 @@ namespace NodePM {
          * @static int
          */
         const static int MAX_WAIT_TIME_FOR_SOCKET = 45;
-        
+
         /**
          * Flag manager is started
          * 

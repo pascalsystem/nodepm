@@ -182,7 +182,7 @@ void PascalSystem::Process::Item::hardStop() {
     pid = -1;
 }
 
-void PascalSystem::Process::Item::stop() {
+void PascalSystem::Process::Item::stopStandard() {
     running = false;
     int counterSigTerm = 0;
     while ((pid > 0) && (kill(pid, 0) == 0) && (counterSigTerm < 5)) {
@@ -193,6 +193,42 @@ void PascalSystem::Process::Item::stop() {
         hardStop();
     }
     pid = -1;
+}
+
+void PascalSystem::Process::Item::stopWaitSigTerm() {
+    this->stopWaitSigTerm(0);
+}
+
+void PascalSystem::Process::Item::stopWaitSigTerm(int executeCounter) {
+    PascalSystem::Process::SafeReloadOption* opts = config->getSafeReloadOptions();
+    if ((opts->maxTry > 0) && (executeCounter >= opts->maxTry)) {
+        stopStandard();
+        return;
+    }
+    running = false;
+    int counterSigTerm = 0;
+    if (pid <= 0) {
+        return;
+    }
+    kill(pid, SIGTERM);
+    while ((pid > 0) && (kill(pid, 0) == 0) && (counterSigTerm < 5)) {
+        usleep(50000);
+        counterSigTerm++;
+    }
+    if (pid > 0) {
+        sleep(opts->interval);
+        stopWaitSigTerm(executeCounter + 1);
+    }
+    pid = -1;
+}
+
+void PascalSystem::Process::Item::stop() {
+    PascalSystem::Process::SafeReloadOption* opts = config->getSafeReloadOptions();
+    if (opts->modeOn) {
+        stopWaitSigTerm();
+    } else {
+        stopStandard();
+    }
 }
 
 int PascalSystem::Process::Item::getPid() {
