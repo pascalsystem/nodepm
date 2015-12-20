@@ -172,9 +172,28 @@ namespace PascalSystem {
             /**
              * Is env unix domain
              * 
-             * @return 
+             * @return bool
              */
             bool isEnvUnixDomain();
+            /**
+             * Stop with send signal term and wait
+             * 
+             * @return void
+             */
+            void stopWaitSigTerm();
+            /**
+             * Stop with send singal term and send counter for execute method number
+             * 
+             * @param executeCounter
+             * @return void
+             */
+            void stopWaitSigTerm(int executeCounter);
+            /**
+             * Stop application
+             * 
+             * @return void
+             */
+            void stopStandard();
         };
     }
 }
