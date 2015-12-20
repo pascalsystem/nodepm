@@ -11,6 +11,18 @@ void PascalSystem::Process::ConfigAbstract::setEnvironments(std::list<std::strin
     this->environments = environments;
 }
 
+void PascalSystem::Process::ConfigAbstract::setSafeReloadOptionsByParameters(bool modeOn, int maxTry, int interval) {
+    PascalSystem::Process::SafeReloadOption* opts = new PascalSystem::Process::SafeReloadOption();
+    opts->modeOn = modeOn;
+    opts->maxTry = maxTry;
+    opts->interval = interval;
+    setSafeReloadOptions(opts);
+}
+
+void PascalSystem::Process::ConfigAbstract::setSafeReloadOptions(PascalSystem::Process::SafeReloadOption* safeReloadMode) {
+    this->safeReloadOptions = safeReloadMode;
+}
+
 bool PascalSystem::Process::ConfigAbstract::hasEnvironments() {
     return (this->environments.size() > 0) ? true : false;
 }
@@ -39,4 +51,8 @@ std::string PascalSystem::Process::ConfigAbstract::getEnvironment(std::string ke
         }
     }
     return "";
+}
+
+PascalSystem::Process::SafeReloadOption* PascalSystem::Process::ConfigAbstract::getSafeReloadOptions() {
+    return this->safeReloadOptions;
 }
